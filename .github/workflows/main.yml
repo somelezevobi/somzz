@@ -1,0 +1,39 @@
+name  : GitHub_Actions
+on  : 
+  push  :
+      branches  :
+          - main
+jobs  :
+    build :
+          runs-on  :  ubuntu-latest
+          steps:
+           - name  : build
+             run:  echo  "Building project..."
+           - name  : Notification
+             if :  failure()
+             run :  |
+              curl  -X POST  -H "Content-Type: application/json"\ -d '{"status" : Build failed"}' \
+              https://webhook.site/1d67ef9b-b86a-4c3b-bf3f-b8d966bbbab2
+
+    test :
+           runs-on : ubuntu-latest
+           needs  : build
+           steps:
+            - name: Run Tests
+              run : echo "Running tests..."
+
+    deploy :
+           runs-on : ubuntu-latest
+           needs : test
+           steps:
+           - name : deploy to final stage
+             run : echo "deploying..."
+           - name : Notification
+             if : failure()
+             run : |
+               curl  -X POST  -H "Content-Type: application/json"\ -d '{"status" : Build failed"}' \
+               https://webhook.site/1d67ef9b-b86a-4c3b-bf3f-b8d966bbbab2
+              
+              
+          
+          
